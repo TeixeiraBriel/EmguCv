@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
@@ -42,8 +43,6 @@ namespace Desktop
                     if (encontraImag(imgbtnAccountSettings))
                     {
                         TextoResultado1.Text = "Favor selecione o personagem.";
-                        btnLogar.Visibility = Visibility.Collapsed;
-                        btnJogar.Visibility = Visibility.Visible;
                     }
                     else
                     {
@@ -90,7 +89,7 @@ namespace Desktop
                 }
                 else
                 {
-                    clicarImag(imgbtnDificuldade, true, 10 , 10);
+                    clicarImag(imgbtnDificuldade, true, 10, 10);
                     AutoItX.Send("{TAB}");
                     AutoItX.Send("rimgt123");
                     AutoItX.Send("{ENTER}");
@@ -101,7 +100,42 @@ namespace Desktop
             catch (Exception ex)
             {
                 TextoResultado1.Text = "Falha!";
+                System.Windows.MessageBox.Show(ex.Message);
             }
+        }
+
+        private void btnAndar_Click(object sender, RoutedEventArgs e)
+        {
+            int cont = 0;
+            string ultimaTecla = "w";
+            string penultimaTecla = "a";
+            string[] teclas = new string[4] { "w", "a", "s", "d" };
+            AutoItX.ControlFocus("Hero Siege", "", "");
+            do
+            {
+                int indice = new Random().Next(4);
+                if (teclas[indice] == ultimaTecla || teclas[indice] == penultimaTecla)
+                {
+                    continue;
+                }
+
+                int repeticoes = new Random().Next(5);
+                AutoItX.ControlFocus("Hero Siege", "", "");
+                do
+                {
+                    repeticoes--;
+                    bool continuaAndando = validaDirecaoLivre(teclas[indice]);
+                    if (!continuaAndando)
+                    {
+                        break;
+                    }
+                } while (repeticoes > 0);
+
+                AutoItX.ControlClick("Hero Siege", "", "", "left");
+                cont++;
+                penultimaTecla = ultimaTecla;
+                ultimaTecla = teclas[indice];
+            } while (cont < 100);
         }
 
         private void clicarImag(Bitmap myPic, bool ajusteClique = false, int ajusteX = 0, int ajusteY = 0)
@@ -227,6 +261,89 @@ namespace Desktop
                 }
             }
             return new Tuple<bool, int, int>(false, width, height);
+        }
+
+        bool validaDirecaoLivre(string keyPress)
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            var sizeHandle = AutoItX.WinGetClientSize("Hero Siege");
+            var posHandle = AutoItX.WinGetPos("Hero Siege");
+
+            Bitmap screenCapture = new Bitmap(posHandle.Width, posHandle.Height);
+
+            Graphics g = Graphics.FromImage(screenCapture);
+            g.CopyFromScreen(posHandle.X,
+                             posHandle.Y,
+                             0, 0,
+                             screenCapture.Size,
+                             CopyPixelOperation.SourceCopy);
+
+
+            for (int i = 0; i < 100; i++)
+            {
+                AutoItX.Send(keyPress);
+            }
+
+            Thread.Sleep(300);
+            Bitmap screenCapture2 = new Bitmap(posHandle.Width - 1100, posHandle.Height - 600);
+
+            g = Graphics.FromImage(screenCapture2);
+
+            g.CopyFromScreen(posHandle.X + 1090,
+                             posHandle.Y + 100,
+                             0, 0,
+                             screenCapture2.Size,
+                             CopyPixelOperation.SourceCopy);
+
+            screenCapture.Save("printA", ImageFormat.Png);
+            screenCapture2.Save("printB", ImageFormat.Jpeg);
+
+            Tuple<bool, int, int> isInCapture = IsInCapture(screenCapture2, screenCapture);
+            sw.Stop();
+
+            TimeSpan ts = sw.Elapsed;
+
+            return !isInCapture.Item1;
+        }
+
+        private void btnTeste_Click(object sender, RoutedEventArgs e)
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            var sizeHandle = AutoItX.WinGetClientSize("Hero Siege");
+            var posHandle = AutoItX.WinGetPos("Hero Siege");
+
+            Bitmap screenCapture = new Bitmap(posHandle.Width, posHandle.Height);
+
+            Graphics g = Graphics.FromImage(screenCapture);
+            g.CopyFromScreen(posHandle.X,
+                             posHandle.Y,
+                             0, 0,
+                             screenCapture.Size,
+                             CopyPixelOperation.SourceCopy);
+
+            Bitmap screenCapture2 = new Bitmap(posHandle.Width - 1100, posHandle.Height - 600);
+
+            g = Graphics.FromImage(screenCapture2);
+
+            g.CopyFromScreen(posHandle.X + 1090,
+                             posHandle.Y + 100,
+                             0, 0,
+                             screenCapture2.Size,
+                             CopyPixelOperation.SourceCopy);
+
+            screenCapture.Save("printA", ImageFormat.Png);
+            screenCapture2.Save("printB", ImageFormat.Jpeg);
+
+            Tuple<bool, int, int> isInCapture = IsInCapture(screenCapture2, screenCapture);
+            sw.Stop();
+
+            TimeSpan ts = sw.Elapsed;
+
+            bool teste = !isInCapture.Item1;
         }
     }
 }

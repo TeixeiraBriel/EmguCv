@@ -9,8 +9,12 @@
     <Grid>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock Text="Resultado" Name="TextoResultado1" FontSize="30" FontWeight="Bold" Visibility="Collapsed"/>
-            <Button x:Name="btnLogar" Content="Logar" Click="btnLogar_Click" Width="100" Height="50"/>
-            <Button x:Name="btnJogar" Content="Iniciar" Click="btnJogar_Click" Width="100" Height="50"/>
+            <StackPanel>
+                <Button x:Name="btnLogar" Content="Logar" Click="btnLogar_Click" Width="100" Height="50"/>
+                <Button x:Name="btnJogar" Content="Iniciar" Click="btnJogar_Click" Width="100" Height="50"/>
+                <Button x:Name="btnAndar" Content="Andar Aleatorio" Click="btnAndar_Click" Width="100" Height="50"/>
+                <Button x:Name="teste" Content="Andar teste" Click="btnTeste_Click" Width="100" Height="50"/>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>
