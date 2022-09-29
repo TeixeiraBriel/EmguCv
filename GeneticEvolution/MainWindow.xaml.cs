@@ -20,8 +20,8 @@ namespace GeneticEvolution
     /// </summary>
     public partial class MainWindow : Window
     {
-        List<string[]> _matrizGrama;
-        List<string[]> _matrizCoelho;
+        List<List<Grama>> _matrizGrama;
+        List<List<Coelho>> _matrizCoelho;
         int contadorCoelhos = 1;
         int _contGeracao = 1;
 
@@ -29,16 +29,49 @@ namespace GeneticEvolution
         {
             InitializeComponent();
             _matrizGrama = CriaMatrizGrama();
-            _matrizCoelho = CriaMatrizCoelho(); 
+            _matrizCoelho = CriaMatrizCoelho();
             imprimeCampos(_matrizGrama, _matrizCoelho);
         }
 
         void metodoPrincipal()
         {
-            bool novasPlantas = false;
-            int tempoCrescimento = 4;
 
+            bool novasPlantas = false;
             TabelaPrincipal.Children.Clear();
+
+            //Movo o coelho
+            List<List<Tuple<int, int>>> mudançasCoelhos = new List<List<Tuple<int, int>>>();
+            contadorCoelhos = 0;
+            foreach (var linhaMatriz in _matrizCoelho)
+            {
+                foreach (var coelho in linhaMatriz)
+                {
+                    if (coelho.Vivo)
+                    {
+                        var resultado = coelho.moverCoelho();
+                        mudançasCoelhos.Add(resultado);
+                        if (coelho.validaVida(_matrizGrama[resultado[1].Item1][resultado[1].Item2].Vivo).Vivo)
+                        {
+                            contadorCoelhos++;
+                        }
+                    }
+                }
+            }
+            //Atualizo a matriz
+            foreach (var move in mudançasCoelhos)
+            {
+                if (!_matrizCoelho[move[1].Item1][move[1].Item2].Vivo)
+                {
+                    if (_matrizCoelho[move[0].Item1][move[0].Item2].Vivo)
+                    {
+                        _matrizCoelho[move[1].Item1][move[1].Item2].Estomago = _matrizCoelho[move[0].Item1][move[0].Item2].Estomago;
+                        _matrizCoelho[move[1].Item1][move[1].Item2].Vivo = true;
+                    }
+                    _matrizCoelho[move[0].Item1][move[0].Item2].Estomago = 0;
+                    _matrizCoelho[move[0].Item1][move[0].Item2].Vivo = false;
+                }
+            }
+
             Tuple<bool, int> Mudanças = new Tuple<bool, int>(false, 0);
             if (contadorCoelhos < 95)
             {
@@ -58,66 +91,58 @@ namespace GeneticEvolution
             _contGeracao++;
         }
 
-        List<string[]> CriaMatrizGrama()
+        List<List<Grama>> CriaMatrizGrama()
         {
-            string[] col1 = new string[10] { "O", "O", "O", "O", "O", "O", "O", "O", "O", "O" };
-            string[] col2 = new string[10] { "O", "O", "O", "O", "O", "O", "O", "O", "O", "O" };
-            string[] col3 = new string[10] { "O", "O", "X", "O", "O", "O", "O", "O", "O", "O" };
-            string[] col4 = new string[10] { "O", "O", "O", "O", "O", "O", "O", "O", "O", "O" };
-            string[] col5 = new string[10] { "O", "O", "O", "O", "O", "O", "O", "O", "O", "O" };
-            string[] col6 = new string[10] { "O", "O", "O", "O", "O", "O", "O", "O", "O", "O" };
-            string[] col7 = new string[10] { "O", "O", "O", "O", "O", "O", "O", "O", "O", "O" };
-            string[] col8 = new string[10] { "O", "O", "O", "O", "O", "O", "O", "O", "O", "O" };
-            string[] col9 = new string[10] { "O", "O", "O", "O", "O", "O", "O", "O", "O", "O" };
-            string[] col10 = new string[10] { "O", "O", "O", "O", "O", "O", "O", "O", "O", "O" };
-            List<string[]> matriz = new List<string[]>();
-            matriz.Add(col1);
-            matriz.Add(col2);
-            matriz.Add(col3);
-            matriz.Add(col4);
-            matriz.Add(col5);
-            matriz.Add(col6);
-            matriz.Add(col7);
-            matriz.Add(col8);
-            matriz.Add(col9);
-            matriz.Add(col10);
+            List<List<Grama>> matrizGrama = new List<List<Grama>>();
+            for (int i = 0; i < 10; i++)
+            {
+                List<Grama> gramaLinha = new List<Grama>();
+                for (int j = 0; j < 10; j++)
+                {
+                    if ((i == 2 && j == 2) || (i == 5 && j == 5))
+                    {
+                        gramaLinha.Add(new Grama() { Vivo = true, Maturidade = 10, posicaoX = i, posicaoY = j });
+                    }
+                    else
+                    {
+                        gramaLinha.Add(new Grama() { Vivo = false, Maturidade = 10, posicaoX = i, posicaoY = j });
+                    }
+                }
+                matrizGrama.Add(gramaLinha);
+            }
 
-            return matriz;
+            return matrizGrama;
         }
 
-        List<string[]> CriaMatrizCoelho()
+        List<List<Coelho>> CriaMatrizCoelho()
         {
-            string[] col1 = new string[10] { "O", "O", "O", "O", "O", "O", "O", "O", "O", "O" };
-            string[] col2 = new string[10] { "X", "O", "O", "O", "O", "O", "O", "O", "O", "O" };
-            string[] col3 = new string[10] { "O", "O", "O", "O", "O", "O", "O", "O", "O", "O" };
-            string[] col4 = new string[10] { "O", "O", "O", "O", "O", "O", "O", "O", "O", "O" };
-            string[] col5 = new string[10] { "O", "O", "O", "O", "O", "O", "O", "O", "O", "O" };
-            string[] col6 = new string[10] { "O", "O", "O", "O", "O", "O", "O", "O", "O", "O" };
-            string[] col7 = new string[10] { "O", "O", "O", "O", "O", "O", "O", "O", "O", "O" };
-            string[] col8 = new string[10] { "O", "O", "O", "O", "O", "O", "O", "O", "O", "O" };
-            string[] col9 = new string[10] { "O", "O", "O", "O", "O", "O", "O", "O", "O", "O" };
-            string[] col10 = new string[10] { "O", "O", "O", "O", "O", "O", "O", "O", "O", "O" };
-            List<string[]> matriz = new List<string[]>();
-            matriz.Add(col1);
-            matriz.Add(col2);
-            matriz.Add(col3);
-            matriz.Add(col4);
-            matriz.Add(col5);
-            matriz.Add(col6);
-            matriz.Add(col7);
-            matriz.Add(col8);
-            matriz.Add(col9);
-            matriz.Add(col10);
+            List<List<Coelho>> matrizCoelho2 = new List<List<Coelho>>();
+            for (int i = 0; i < 10; i++)
+            {
+                List<Coelho> coelhoLinha = new List<Coelho>();
+                for (int j = 0; j < 10; j++)
+                {
+                    if (i == 5 && j == 5)
+                    {
+                        coelhoLinha.Add(new Coelho() { Vivo = true, Estomago = 50, posicaoX = i, posicaoY = j });
+                    }
+                    else
+                    {
+                        coelhoLinha.Add(new Coelho() { Vivo = false, Estomago = 5, posicaoX = i, posicaoY = j });
+                    }
+                }
+                matrizCoelho2.Add(coelhoLinha);
+            }
 
-            return matriz;
+            return matrizCoelho2;
         }
 
-        void adicionaInfoCampo(int x, int y, bool grama = false, bool coelho = false)
+        void adicionaInfoCampo(int x, int y, bool grama = false, bool coelho = false, string texto = "")
         {
             if (grama && coelho)
             {
                 TextBlock txt2 = new TextBlock();
-                txt2.Text = $"Coelho {x}x{y}";
+                txt2.Text = string.IsNullOrEmpty(texto) ? $"Coelho {x}x{y}" : texto;
                 txt2.Foreground = Brushes.Blue;
                 txt2.FontWeight = FontWeights.Bold;
 
@@ -138,7 +163,7 @@ namespace GeneticEvolution
             else if (coelho)
             {
                 TextBlock txt2 = new TextBlock();
-                txt2.Text = $"Coelho {x}x{y}";
+                txt2.Text = string.IsNullOrEmpty(texto) ? $"Coelho {x}x{y}" : texto;
                 txt2.Foreground = Brushes.Blue;
                 txt2.FontWeight = FontWeights.Bold;
                 Grid.SetColumn(txt2, x);
@@ -157,31 +182,31 @@ namespace GeneticEvolution
             }
         }
 
-        void imprimeCampos(List<string[]> matrizGrama, List<string[]> matrizCoelho)
+        void imprimeCampos(List<List<Grama>> matrizGrama, List<List<Coelho>> matrizCoelho)
         {
             for (int i = 0; i < matrizGrama.Count; i++)
             {
-                for (int j = 0; j < matrizGrama[0].Length; j++)
+                for (int j = 0; j < matrizGrama[0].Count; j++)
                 {
-                    if (matrizGrama[i][j] == "X" && matrizCoelho[i][j] == "X")
+                    if (matrizGrama[i][j].Vivo && matrizCoelho[i][j].Vivo)
                     {
-                        adicionaInfoCampo(i, j, true, true);
+                        adicionaInfoCampo(i, j, true, true, $"Coelho {matrizCoelho[i][j].posicaoX}x{matrizCoelho[i][j].posicaoY} v:{matrizCoelho[i][j].Estomago}");
                     }
-                    else if(matrizGrama[i][j] == "X")
+                    else if (matrizGrama[i][j].Vivo)
                     {
                         adicionaInfoCampo(i, j, true, false);
                     }
-                    else if (matrizCoelho[i][j] == "X")
+                    else if (matrizCoelho[i][j].Vivo)
                     {
-                        adicionaInfoCampo(i, j, false, true);
+                        adicionaInfoCampo(i, j, false, true, $"Coelho {matrizCoelho[i][j].posicaoX}x{matrizCoelho[i][j].posicaoY} v:{matrizCoelho[i][j].Estomago}");
                     }
                 }
             }
         }
 
-        List<string[]> propagarAlimento(List<string[]> matrizEntrada, int Geracao, out bool novasPlantas)
+        List<List<Grama>> propagarAlimento(List<List<Grama>> matrizEntrada, int Geracao, out bool novasPlantas)
         {
-            List<string[]> matriz = matrizEntrada;
+            List<List<Grama>> matriz = matrizEntrada;
             novasPlantas = false;
 
             if (Geracao % 10 == 0)
@@ -189,22 +214,22 @@ namespace GeneticEvolution
                 List<Tuple<int, int>> mudancas = new List<Tuple<int, int>>();
                 for (int j = 0; j < matriz.Count; j++)
                 {
-                    for (int i = 0; i < matriz[0].Length; i++)
+                    for (int i = 0; i < matriz[0].Count; i++)
                     {
-                        if (matriz[j][i] == "X")
+                        if (matriz[j][i].Vivo)
                         {
 
                             mudancas.Add(new Tuple<int, int>(j, i - 1 < 0 ? 0 : i - 1));
-                            mudancas.Add(new Tuple<int, int>(j, i + 1 > matriz[0].Length - 1 ? matriz[0].Length - 1 : i + 1));
+                            mudancas.Add(new Tuple<int, int>(j, i + 1 > matriz[0].Count - 1 ? matriz[0].Count - 1 : i + 1));
                             mudancas.Add(new Tuple<int, int>(j - 1 < 0 ? 0 : j - 1, i));
-                            mudancas.Add(new Tuple<int, int>(j + 1 > matriz[0].Length - 1 ? matriz[0].Length - 1 : j + 1, i));
+                            mudancas.Add(new Tuple<int, int>(j + 1 > matriz[0].Count - 1 ? matriz[0].Count - 1 : j + 1, i));
                         }
                     }
                 }
 
                 foreach (var item in mudancas)
                 {
-                    matriz[item.Item1][item.Item2] = "X";
+                    matriz[item.Item1][item.Item2].Vivo = true;
                 }
 
                 novasPlantas = true;
@@ -213,27 +238,26 @@ namespace GeneticEvolution
             return matriz;
         }
 
-        Tuple<bool,int> comerGramas()
+        Tuple<bool, int> comerGramas()
         {
-            Tuple<bool, int> mudanças = new Tuple<bool, int>(false,0);
-            int contadorProle = 5;
+            Tuple<bool, int> mudanças = new Tuple<bool, int>(false, 0);
+            int contadorProle = 55;
             for (int i = 0; i < 10; i++)
             {
                 for (int j = 0; j < 10; j++)
                 {
-                    if (_matrizCoelho[i][j] == "X" && _matrizGrama[i][j] == "X")
+                    if (_matrizCoelho[i][j].Vivo && _matrizGrama[i][j].Vivo)
                     {
-                        List<Tuple<int,int>> opcoes = new List<Tuple<int, int>>();
+                        List<Tuple<int, int>> opcoes = new List<Tuple<int, int>>();
 
                         int x = new Random().Next(9);
                         int y = new Random().Next(9);
-                        opcoes.Add(new Tuple<int, int>(x, y));
                         bool trocar = true;
                         do
                         {
                             if (!opcoes.Exists(tupla => tupla.Item1 == x && tupla.Item2 == y))
                             {
-                                if (_matrizCoelho[x][y] == "X")
+                                if (_matrizCoelho[x][y].Vivo)
                                 {
                                     opcoes.Add(new Tuple<int, int>(x, y));
                                     x = x + 1 < 10 ? x + 1 : 0;
@@ -246,19 +270,23 @@ namespace GeneticEvolution
                             }
                             else
                             {
-                                x = new Random().Next(9);
-                                y = y + 1 < 10 ? y + 1 : 0;
+                                if (x % 2 == 1)
+                                    x = x + 1 < 10 ? x + 1 : 0;
+                                else
+                                    x = new Random().Next(9);
+
+                                if (y % 2 == 1)
+                                    y = y + 1 < 10 ? y + 1 : 0;
+                                else
+                                    y = new Random().Next(9);
                             }
                         } while (trocar);
 
 
-                        _matrizGrama[i][j] = "O";
-                        _matrizCoelho[x][y] = "X";
+                        _matrizGrama[i][j].Vivo = false;
+                        _matrizCoelho[x][y].Vivo = true;
+                        _matrizCoelho[x][y].Estomago = 6;
                         mudanças = new Tuple<bool, int>(true, mudanças.Item2 + 1);
-                        if (mudanças.Item2 == 5)
-                        {
-                            return mudanças;
-                        }
                     }
                 }
             }
