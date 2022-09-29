@@ -5,16 +5,27 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GeneticEvolution"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="700" Width="900">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <Button x:Name="btnProxGeracao" Content="Proxima Geracao" Click="btnProxGeracao_Click"/>
-            <TextBlock x:Name="tituloGeracao" Text="Geracão:1" VerticalAlignment="Center"/>
-            <TextBlock x:Name="contadorCoelhoes" Text="Coelhos:1" VerticalAlignment="Center"/>
+            <StackPanel Orientation="Horizontal" Width="450">
+                <Button x:Name="btnProxGeracao" Content="Proxima Geracao" Click="btnProxGeracao_Click" Margin="5"/>
+                <TextBlock x:Name="tituloGeracao" Text="Geracão:1" VerticalAlignment="Center" Margin="5"/>
+                <TextBlock x:Name="contadorCoelhoes" Text="Coelhos:1" VerticalAlignment="Center" Margin="5"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Width="450">
+                <Button x:Name="btnReset" Content="Reset" Click="btnReset_Click" Margin="5"/>
+                <TextBlock Text="Gramas:" VerticalAlignment="Center"/>
+                <TextBox x:Name="inputQtdGrama" Margin="5" Width="50"/>
+                <TextBlock Text="Coelhos:" VerticalAlignment="Center"/>
+                <TextBox x:Name="inputQtdCoelho" Margin="5" Width="50"/>
+                <TextBlock Text="Lobos:" VerticalAlignment="Center"/>
+                <TextBox x:Name="inputQtdLobo" Margin="5" Width="50"/>
+            </StackPanel>
         </StackPanel>
 
         <Grid x:Name="TabelaPrincipal" Grid.Row="1">

@@ -21,176 +21,158 @@ namespace GeneticEvolution
     public partial class MainWindow : Window
     {
         #region Variaveis
+        int _comidaEstomagoTipo0 = 3;
+        int _comidaEstomagoTipo1 = 3;
+        int _tempoMaturidade = 3;
+        int _qtdGrama = 3;
+        int _qtdCoelho = 2;
+        int _qtdLobo = 1;
         List<Grama> _matrizGrama;
-        List<Coelho> _matrizCoelho;
-        int contadorCoelhos = 1;
+        List<Predador> _matrizCoelho;
+        List<Predador> _matrizLobo;
         int _contGeracao = 1;
-        List<Grama> CriaMatrizGrama()
+        List<Grama> CriaMatrizGrama(int tempoMaturidade, int qtd)
         {
             List<Grama> matrizGrama = new List<Grama>();
 
-            matrizGrama.Add(new Grama() { Vivo = true, Maturidade = 10, posicaoX = 2, posicaoY = 2 });
-            matrizGrama.Add(new Grama() { Vivo = true, Maturidade = 10, posicaoX = 8, posicaoY = 8 });
+            for (int i = 0; i < qtd; i++)
+            {
+                bool trocar = true;
+                do
+                {
+                    int x = new Random().Next(9);
+                    int y = new Random().Next(9);
+                    if (!matrizGrama.Exists(a => a.posicaoX == x && a.posicaoY == y))
+                    {
+                        matrizGrama.Add(new Grama() { Vivo = true, Maturidade = tempoMaturidade, posicaoX = x, posicaoY = y });
+                        trocar = false;
+                    }
+                } while (trocar);
+            }
 
             return matrizGrama;
         }
-        List<Coelho> CriaMatrizCoelho()
+        List<Predador> CriaMatrizPredador(int qtdEstomago, int tipo, int qtd)
         {
-            List<Coelho> matrizCoelho = new List<Coelho>();
-            matrizCoelho.Add(new Coelho() { Vivo = true, Estomago = 50, posicaoX = 5, posicaoY = 5 });
+            List<Predador> matriz = new List<Predador>();
+            for (int i = 0; i < qtd; i++)
+            {
+                bool trocar = true;
+                do
+                {
+                    int x = new Random().Next(9);
+                    int y = new Random().Next(9);
+                    if (!matriz.Exists(a => a.posicaoX == x && a.posicaoY == y))
+                    {
+                        matriz.Add(new Predador() { Vivo = true, Estomago = qtdEstomago, tipo = tipo, posicaoX = x, posicaoY = y, Multiplicar = false, dataNascimento = "G1"});
+                        trocar = false;
+                    }
+                } while (trocar);
+            }
 
-            return matrizCoelho;
+            return matriz;
         }
         #endregion
 
         public MainWindow()
         {
             InitializeComponent();
-            _matrizGrama = CriaMatrizGrama();
-            _matrizCoelho = CriaMatrizCoelho();
-            imprimeCampos(_matrizGrama, _matrizCoelho);
+            inputQtdGrama.Text = _qtdGrama.ToString();
+            inputQtdCoelho.Text = _qtdCoelho.ToString();
+            inputQtdLobo.Text = _qtdLobo.ToString();
+            _matrizGrama = CriaMatrizGrama(_tempoMaturidade, _qtdGrama);
+            _matrizCoelho = CriaMatrizPredador(_comidaEstomagoTipo0, 0, _qtdCoelho);
+            _matrizLobo = CriaMatrizPredador(_comidaEstomagoTipo1, 1, _qtdLobo);
+            tituloGeracao.Text = $"Geração {_contGeracao}";
+            contadorCoelhoes.Text = $"     Coelho|Grama     {_matrizCoelho.Count}|{_matrizGrama.Count}";
+            imprimeCampos();
         }
 
         void metodoPrincipal()
         {
-            bool novasPlantas = false;
             TabelaPrincipal.Children.Clear();
 
-            //Movo o coelho
-            List<List<Tuple<int, int>>> mudançasCoelhos = new List<List<Tuple<int, int>>>();
-            foreach (var coelho in _matrizCoelho)
-            {
-                if (coelho.Vivo)
-                {
-                    var resultado = coelho.moverCoelho();
-                    mudançasCoelhos.Add(resultado);
-                    
-                    if (coelho.validaVida(_matrizGrama.FirstOrDefault(x => x.posicaoX == resultado[1].Item1 && x.posicaoY == resultado[1].Item2) != null).Vivo)
-                    {
-                        contadorCoelhos++;
-                    }
-                }
-            }
-            //Atualizo a matriz
-            foreach (var move in mudançasCoelhos)
-            {
-                var coelhoPosAtual = _matrizCoelho.FirstOrDefault(x => x.posicaoX == move[0].Item1 && x.posicaoY == move[0].Item2);
-                var coelhoPosDestino = _matrizCoelho.FirstOrDefault(x => x.posicaoX == move[1].Item1 && x.posicaoY == move[1].Item2);
-
-                if (coelhoPosAtual.Estomago == 0)
-                    _matrizCoelho.Remove(coelhoPosAtual);
-
-                if (coelhoPosDestino == null)
-                {
-                    coelhoPosAtual.posicaoX = move[1].Item1;
-                    coelhoPosAtual.posicaoY = move[1].Item2;
-                }
-            }
+            //Mover predadores
+            List<List<Predador>> list = new List<List<Predador>>() { _matrizCoelho, _matrizLobo };
+            Predador.moverTodosPredadores(list, _matrizGrama);
 
             Tuple<bool, int> Mudanças = new Tuple<bool, int>(false, 0);
-            if (_matrizCoelho.Count < 95)
-            {
-                Mudanças = comerGramas();
-            }
-            contadorCoelhos += Mudanças.Item2;
-            _matrizGrama = propagarAlimento(_matrizGrama, _contGeracao, out novasPlantas);
-            imprimeCampos(_matrizGrama, _matrizCoelho);
-            if (novasPlantas)
-            {
-                tituloGeracao.Text = $"\nGeração {_contGeracao} -- Novas plantas nasceram!";
-                novasPlantas = false;
-            }
+            mutiplicarPredador(_matrizCoelho);
+            mutiplicarPredador(_matrizLobo);
+            _matrizGrama = propagarAlimento(_matrizGrama, _contGeracao);
+            imprimeCampos();
 
             tituloGeracao.Text = $"Geração {_contGeracao}";
-            contadorCoelhoes.Text = $"     Coelho|Grama     {_matrizCoelho.Count}|{_matrizGrama.Count}";
+            contadorCoelhoes.Text = $"     Grama|Coelho|Lobo     {_matrizGrama.Count}|{_matrizCoelho.Count}|{_matrizLobo.Count}";
             _contGeracao++;
         }
 
-        List<Grama> propagarAlimento(List<Grama> matrizEntrada, int Geracao, out bool novasPlantas)
+        List<Grama> propagarAlimento(List<Grama> matrizEntrada, int Geracao)
         {
             List<Grama> matriz = matrizEntrada;
-            novasPlantas = false;
 
-            if (Geracao % 10 == 0)
+            List<Tuple<int, int>> mudancas = new List<Tuple<int, int>>();
+            foreach (var grama in matriz)
             {
-                List<Tuple<int, int>> mudancas = new List<Tuple<int, int>>();
-                foreach (var grama in matriz)
+                if (grama.Maturidade > 1)
                 {
-                    int i = grama.posicaoX;
-                    int j = grama.posicaoY;
-
-                    mudancas.Add(new Tuple<int, int>(j, i - 1 < 0 ? 0 : i - 1));
-                    mudancas.Add(new Tuple<int, int>(j, i + 1 > 9 ? 9 : i + 1));
-                    mudancas.Add(new Tuple<int, int>(j - 1 < 0 ? 0 : j - 1, i));
-                    mudancas.Add(new Tuple<int, int>(j + 1 > 9 ? 9 : j + 1, i));
+                    grama.Maturidade--;
+                    continue;
                 }
 
-                foreach (var item in mudancas)
-                {
-                    var gramaPosDestino = _matrizGrama.FirstOrDefault(x => x.posicaoX == item.Item1 && x.posicaoY == item.Item2);
-                    if (gramaPosDestino == null)
-                    {
-                        matriz.Add(new Grama() { Vivo = true, Maturidade = 10, posicaoX = item.Item1, posicaoY = item.Item2 });
-                    }
-                }
+                int i = grama.posicaoX;
+                int j = grama.posicaoY;
 
-                novasPlantas = true;
+                mudancas.Add(new Tuple<int, int>(j, i - 1 < 0 ? 0 : i - 1));
+                mudancas.Add(new Tuple<int, int>(j, i + 1 > 9 ? 9 : i + 1));
+                mudancas.Add(new Tuple<int, int>(j - 1 < 0 ? 0 : j - 1, i));
+                mudancas.Add(new Tuple<int, int>(j + 1 > 9 ? 9 : j + 1, i));
+                grama.Maturidade = _tempoMaturidade;
+            }
+
+            foreach (var item in mudancas)
+            {
+                var gramaPosDestino = _matrizGrama.FirstOrDefault(x => x.posicaoX == item.Item1 && x.posicaoY == item.Item2);
+                if (gramaPosDestino == null)
+                {
+                    matriz.Add(new Grama() { Vivo = true, Maturidade = _tempoMaturidade, posicaoX = item.Item1, posicaoY = item.Item2 });
+                }
             }
 
             return matriz;
         }
 
-        Tuple<bool, int> comerGramas()
+        void mutiplicarPredador(List<Predador> matriz)
         {
-            Tuple<bool, int> mudanças = new Tuple<bool, int>(false, 0);
-            for (int i = 0; i < 10; i++)
-            {
-                for (int j = 0; j < 10; j++)
-                {
-                    if (_matrizCoelho.FirstOrDefault(x => x.posicaoX == i && x.posicaoY == j) != null && _matrizGrama.FirstOrDefault(x => x.posicaoX == i && x.posicaoY == j) != null)
-                    {
-                        List<Tuple<int, int>> opcoes = new List<Tuple<int, int>>();
+            List<Predador> novosPredadores = new List<Predador>();
 
+            foreach (var predador in matriz)
+            {
+                if (predador.Multiplicar)
+                {
+                    int estomago = _comidaEstomagoTipo1;
+                    if (predador.tipo == 0)
+                        estomago = _comidaEstomagoTipo0;
+
+                    bool trocar = true;
+                    do
+                    {
                         int x = new Random().Next(9);
                         int y = new Random().Next(9);
-                        bool trocar = true;
-                        do
+                        if (!matriz.Exists(a => a.posicaoX == x && a.posicaoY == y) && !novosPredadores.Exists(a => a.posicaoX == x && a.posicaoY == y))
                         {
-                            if (!opcoes.Exists(tupla => tupla.Item1 == x && tupla.Item2 == y))
-                            {
-                                if (_matrizCoelho.FirstOrDefault(xx => xx.posicaoX == x && xx.posicaoY == y) != null)
-                                {
-                                    opcoes.Add(new Tuple<int, int>(x, y));
-                                    x = x + 1 < 10 ? x + 1 : 0;
-                                    y = y + 1 < 10 ? y + 1 : 0;
-                                }
-                                else
-                                {
-                                    trocar = false;
-                                }
-                            }
-                            else
-                            {
-                                if (x % 2 == 1)
-                                    x = x + 1 < 10 ? x + 1 : 0;
-                                else
-                                    x = new Random().Next(9);
-
-                                if (y % 2 == 1)
-                                    y = y + 1 < 10 ? y + 1 : 0;
-                                else
-                                    y = new Random().Next(9);
-                            }
-                        } while (trocar);
-
-                        var gramaRemover = _matrizGrama.FirstOrDefault(xx => xx.posicaoX == i && xx.posicaoY == j);
-                        _matrizGrama.Remove(gramaRemover);
-                        _matrizCoelho.Add(new Coelho() { Vivo = true, Estomago = 6, posicaoX = x, posicaoY = y });
-                        mudanças = new Tuple<bool, int>(true, mudanças.Item2 + 1);
-                    }
+                            novosPredadores.Add(new Predador() { Vivo = true, tipo = predador.tipo, Estomago = estomago, posicaoX = x, posicaoY = y, Multiplicar = false, dataNascimento = $"G{_contGeracao}" });
+                            predador.Multiplicar = false;
+                            trocar = false;
+                        }
+                    } while (trocar);
                 }
             }
-            return mudanças;
+
+            foreach (var item in novosPredadores)
+            {
+                matriz.Add(item);
+            }
         }
 
         #region Manipula Front
@@ -199,72 +181,66 @@ namespace GeneticEvolution
             metodoPrincipal();
         }
 
-        void adicionaInfoCampo(int x, int y, bool grama = false, bool coelho = false, string texto = "")
+        void imprimeCoordenada(int x, int y)
         {
-            if (grama && coelho)
+            var existeCoelho = _matrizCoelho.FirstOrDefault(a => a.posicaoX == x && a.posicaoY == y);
+            var existeGrama = _matrizGrama.FirstOrDefault(a => a.posicaoX == x && a.posicaoY == y);
+            var existeLobo = _matrizLobo.FirstOrDefault(a => a.posicaoX == x && a.posicaoY == y);
+
+            StackPanel stkPnl = new StackPanel();
+            Grid.SetColumn(stkPnl, x);
+            Grid.SetRow(stkPnl, y);
+            if (existeCoelho != null)
             {
-                TextBlock txt2 = new TextBlock();
-                txt2.Text = string.IsNullOrEmpty(texto) ? $"Coelho {x}x{y}" : texto;
-                txt2.Foreground = Brushes.Blue;
-                txt2.FontWeight = FontWeights.Bold;
-
-                TextBlock txt1 = new TextBlock();
-                txt1.Text = $"Grama {x}x{y}";
-                txt1.Foreground = Brushes.Green;
-                txt1.FontWeight = FontWeights.Bold;
-
-                StackPanel stkPnl = new StackPanel();
-                stkPnl.Children.Add(txt1);
-                stkPnl.Children.Add(txt2);
-
-                Grid.SetColumn(stkPnl, x);
-                Grid.SetRow(stkPnl, y);
-
-                TabelaPrincipal.Children.Add(stkPnl);
+                TextBlock txt = new TextBlock();
+                txt.Text = $"C{x}x{y} - {existeCoelho.dataNascimento} - E:{existeCoelho.Estomago}";
+                txt.Foreground = Brushes.Blue;
+                txt.FontWeight = FontWeights.Bold;
+                stkPnl.Children.Add(txt);
             }
-            else if (coelho)
+            if (existeGrama != null)
             {
-                TextBlock txt2 = new TextBlock();
-                txt2.Text = string.IsNullOrEmpty(texto) ? $"Coelho {x}x{y}" : texto;
-                txt2.Foreground = Brushes.Blue;
-                txt2.FontWeight = FontWeights.Bold;
-                Grid.SetColumn(txt2, x);
-                Grid.SetRow(txt2, y);
-                TabelaPrincipal.Children.Add(txt2);
+                TextBlock txt = new TextBlock();
+                txt.Text = $"G{x}x{y} - M:{existeGrama.Maturidade}";
+                txt.Foreground = Brushes.Green;
+                txt.FontWeight = FontWeights.Bold;
+                stkPnl.Children.Add(txt);
             }
-            else
+            if (existeLobo != null)
             {
-                TextBlock txt1 = new TextBlock();
-                txt1.Text = $"Grama {x}x{y}";
-                txt1.Foreground = Brushes.Green;
-                txt1.FontWeight = FontWeights.Bold;
-                Grid.SetColumn(txt1, x);
-                Grid.SetRow(txt1, y);
-                TabelaPrincipal.Children.Add(txt1);
+                TextBlock txt = new TextBlock();
+                txt.Text = $"L{x}x{y} - {existeLobo.dataNascimento} - E:{existeLobo.Estomago}";
+                txt.Foreground = Brushes.Red;
+                txt.FontWeight = FontWeights.Bold;
+                stkPnl.Children.Add(txt);
             }
+
+            TabelaPrincipal.Children.Add(stkPnl);
         }
 
-        void imprimeCampos(List<Grama> matrizGrama, List<Coelho> matrizCoelho)
+        void imprimeCampos()
         {
             for (int i = 0; i < 10; i++)
             {
                 for (int j = 0; j < 10; j++)
                 {
-                    if (matrizGrama.FirstOrDefault(x => x.posicaoX == i && x.posicaoY == j) != null && matrizCoelho.FirstOrDefault(x => x.posicaoX == i && x.posicaoY == j) != null)
-                    {
-                        adicionaInfoCampo(i, j, true, true, $"Coelho {i}x{j} v:{matrizCoelho.Find(x => x.posicaoX == i && x.posicaoY == j).Estomago}");
-                    }
-                    else if (matrizGrama.Find(x => x.posicaoX == i && x.posicaoY == j) != null)
-                    {
-                        adicionaInfoCampo(i, j, true, false);
-                    }
-                    else if (matrizCoelho.Find(x => x.posicaoX == i && x.posicaoY == j) != null)
-                    {
-                        adicionaInfoCampo(i, j, false, true, $"Coelho {i}x{j} v:{matrizCoelho.Find(x => x.posicaoX == i && x.posicaoY == j).Estomago}");
-                    }
+                    imprimeCoordenada(i, j);
                 }
             }
         }
+        private void btnReset_Click(object sender, RoutedEventArgs e)
+        {
+            TabelaPrincipal.Children.Clear();
+            _qtdGrama = int.Parse(inputQtdGrama.Text);
+            _qtdCoelho = int.Parse(inputQtdCoelho.Text);
+            _qtdLobo = int.Parse(inputQtdLobo.Text);
+            _matrizGrama = CriaMatrizGrama(_tempoMaturidade, _qtdGrama);
+            _matrizCoelho = CriaMatrizPredador(_comidaEstomagoTipo0, 0, _qtdCoelho);
+            _matrizLobo = CriaMatrizPredador(_comidaEstomagoTipo1, 1, _qtdLobo);
+            imprimeCampos();
+            _contGeracao = 1;
+        }
         #endregion
+
     }
 }
