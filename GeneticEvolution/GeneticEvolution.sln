@@ -5,6 +5,8 @@ VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeneticEvolution", "GeneticEvolution.csproj", "{F99EBA19-8B10-4CD0-A21A-10E5BB43387E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeneticEvolution2.0", "..\GeneticEvolution2.0\GeneticEvolution2.0.csproj", "{79548A5E-6A8C-459D-BE37-BA52915C9BB4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{F99EBA19-8B10-4CD0-A21A-10E5BB43387E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F99EBA19-8B10-4CD0-A21A-10E5BB43387E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F99EBA19-8B10-4CD0-A21A-10E5BB43387E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79548A5E-6A8C-459D-BE37-BA52915C9BB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79548A5E-6A8C-459D-BE37-BA52915C9BB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79548A5E-6A8C-459D-BE37-BA52915C9BB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79548A5E-6A8C-459D-BE37-BA52915C9BB4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
