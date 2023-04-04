@@ -189,5 +189,15 @@ namespace Desktop.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap montaria_cavalo_desmontado {
+            get {
+                object obj = ResourceManager.GetObject("montaria_cavalo_desmontado", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }
