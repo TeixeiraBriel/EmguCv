@@ -163,6 +163,21 @@
   <ItemGroup>
     <None Include="Resources\montaria_cavalo_desmontado.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btn_repetir_sw.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btn_inicia_batalha_repeticao_sw.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\janela_loot_pendente_sw.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btn_sim_sw.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\btn_vender_Itens_sw.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\EmguCv\packages\AutoItX.Dotnet.3.3.14.5\build\AutoItX.Dotnet.targets" Condition="Exists('..\EmguCv\packages\AutoItX.Dotnet.3.3.14.5\build\AutoItX.Dotnet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

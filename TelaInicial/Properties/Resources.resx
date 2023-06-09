@@ -142,6 +142,18 @@
   <data name="btnJogarOnline1280x720" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\btnJogarOnline1280x720.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="btn_inicia_batalha_repeticao_sw" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btn_inicia_batalha_repeticao_sw.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btn_repetir_sw" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btn_repetir_sw.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btn_sim_sw" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btn_sim_sw.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="btn_vender_Itens_sw" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\btn_vender_Itens_sw.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Capture" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Screenshot_4.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -156,6 +168,9 @@
   </data>
   <data name="iconJogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\iconJogo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="janela_loot_pendente_sw" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\janela_loot_pendente_sw.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="montaria_cavalo_desmontado" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\montaria_cavalo_desmontado.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

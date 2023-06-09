@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Net.NetworkInformation;
 using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
@@ -99,7 +100,7 @@ namespace Desktop
                 }
                 else
                 {
-                    clicarImag(imgbtnDificuldade, true, 10 , 10);
+                    clicarImag(imgbtnDificuldade, true, 10, 10);
                     AutoItX.Send("{TAB}");
                     AutoItX.Send("rimgt123");
                     AutoItX.Send("{ENTER}");
@@ -115,40 +116,68 @@ namespace Desktop
 
         private void btnJogar_Click(object sender, RoutedEventArgs e)
         {
-            int cont = 0;
-            string ultimaTecla = "w";
-            string penultimaTecla = "a";
-            string[] teclas = new string[4] { "w", "a", "s", "d" };
-            AutoItX.ControlFocus("World of Warcraft", "", "");
             do
             {
-                int indice = new Random().Next(4);
-                if (ultimaTecla == "a" || ultimaTecla == "d")
+                bool vender = btnVender.IsChecked == true;
+                bool altTab = btnAltTab.IsChecked == true;
+                if (AutoItX.WinActive("BlueStacks App Player") == 0)
                 {
-                    indice = 0;
+                    AutoItX.WinActivate("BlueStacks App Player");
+                    AutoItX.ControlFocus("BlueStacks App Player", "", "");
                 }
-                else if (teclas[indice] == ultimaTecla || teclas[indice] == penultimaTecla)
+                if (encontraImag(Properties.Resources.btn_repetir_sw, salvarPrint: true))
                 {
-                    continue;
-                }
-
-                int repeticoes = new Random().Next(5);
-                AutoItX.ControlFocus("World of Warcraft", "", "");
-                do
-                {
-                    repeticoes--;
-                    bool continuaAndando = validaDirecaoLivre(teclas[indice]);
-                    if (!continuaAndando)
+                    if (vender)//venderItens
                     {
-                        break;
+                        clicarImag(Properties.Resources.btn_vender_Itens_sw);
+                        Thread.Sleep(500);
+                        AutoItX.ControlSend("BlueStacks App Player", "", "", "1");
+                        Thread.Sleep(500);
+                        if (encontraImag(Properties.Resources.btn_sim_sw))
+                        {
+                            clicarImag(Properties.Resources.btn_sim_sw);
+                            Thread.Sleep(500);
+                        }
+                        else
+                        {
+                            AutoItX.Send("{ESCAPE}");
+                            Thread.Sleep(500);
+                            AutoItX.Send("{ESCAPE}");
+                        }
                     }
-                } while (repeticoes > 0);
 
-                AutoItX.ControlClick("World of Warcraft", "", "", "left");
-                cont++;
-                penultimaTecla = ultimaTecla;
-                ultimaTecla = teclas[indice];
-            } while (cont < 100);
+                    clicarImag(Properties.Resources.btn_repetir_sw);
+
+                    Thread.Sleep(1000);
+
+                    if (encontraImag(Properties.Resources.btn_sim_sw))
+                    {
+                        clicarImag(Properties.Resources.btn_sim_sw);
+                        Thread.Sleep(1000);
+                    }
+
+                    try
+                    {
+                        clicarImag(Properties.Resources.btn_inicia_batalha_repeticao_sw);
+                    }
+                    catch
+                    {
+                        AutoItX.Send("2");
+                    }
+
+                    Thread.Sleep(300);
+                };
+
+                if (altTab)
+                {
+                    AutoItX.Send("!{TAB}");
+                    Thread.Sleep(60000);
+                }
+                else
+                {
+                    Thread.Sleep(15000);
+                }
+            } while (true);
         }
 
         bool validaDirecaoLivre(string keyPress)
@@ -170,9 +199,9 @@ namespace Desktop
 
             if (keyPress == "a" || keyPress == "d")
                 AutoItX.AutoItSetOption("SendKeyDownDelay", 500);
-            else if(keyPress == "w")
+            else if (keyPress == "w")
                 AutoItX.AutoItSetOption("SendKeyDownDelay", 10000);
-            else 
+            else
                 return false;
 
             AutoItX.Send(keyPress);
@@ -212,11 +241,24 @@ namespace Desktop
 
                 Graphics g = Graphics.FromImage(screenCapture);
 
-                g.CopyFromScreen(Screen.PrimaryScreen.Bounds.X,
-                                 Screen.PrimaryScreen.Bounds.Y,
-                                 0, 0,
-                                 screenCapture.Size,
-                                 CopyPixelOperation.SourceCopy);
+                try
+                {
+                    g.CopyFromScreen(Screen.PrimaryScreen.Bounds.X,
+                                     Screen.PrimaryScreen.Bounds.Y,
+                                     0, 0,
+                                     screenCapture.Size,
+                                     CopyPixelOperation.SourceCopy);
+                }
+                catch
+                {
+                    Thread.Sleep(millisecondsTimeout: 500);
+                    g = Graphics.FromImage(screenCapture);
+                    g.CopyFromScreen(Screen.PrimaryScreen.Bounds.X,
+                                     Screen.PrimaryScreen.Bounds.Y,
+                                     0, 0,
+                                     screenCapture.Size,
+                                     CopyPixelOperation.SourceCopy);
+                }
 
                 Tuple<bool, int, int> isInCapture = IsInCapture(myPic, screenCapture);
 
@@ -226,14 +268,14 @@ namespace Desktop
                     {
                         AutoItX.MouseMove(isInCapture.Item2 + ajusteX, isInCapture.Item3 + ajusteY, 10);
                         Thread.Sleep(300);
-                        AutoItX.MouseClick("left", isInCapture.Item2 + ajusteX, isInCapture.Item3 + ajusteY);
+                        AutoItX.MouseMove(isInCapture.Item2 + ajusteX, isInCapture.Item3 + ajusteY);
                         AutoItX.MouseClick("left");
                     }
                     else
                     {
                         AutoItX.MouseMove(isInCapture.Item2, isInCapture.Item3, 10);
                         Thread.Sleep(300);
-                        AutoItX.MouseClick("left", isInCapture.Item2, isInCapture.Item3);
+                        AutoItX.MouseMove(isInCapture.Item2, isInCapture.Item3);
                         AutoItX.MouseClick("left");
                     }
                     repetir = false;
@@ -254,7 +296,7 @@ namespace Desktop
             throw new Exception("Não encontrou img.");
         }
 
-        private bool encontraImag(Bitmap myPic)
+        private bool encontraImag(Bitmap myPic, bool salvarPrint = false)
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -263,16 +305,34 @@ namespace Desktop
 
             Graphics g = Graphics.FromImage(screenCapture);
 
-            g.CopyFromScreen(Screen.PrimaryScreen.Bounds.X,
-                             Screen.PrimaryScreen.Bounds.Y,
-                             0, 0,
-                             screenCapture.Size,
-                             CopyPixelOperation.SourceCopy);
+            try
+            {
+                g.CopyFromScreen(Screen.PrimaryScreen.Bounds.X,
+                                 Screen.PrimaryScreen.Bounds.Y,
+                                 0, 0,
+                                 screenCapture.Size,
+                                 CopyPixelOperation.SourceCopy);
+            }
+            catch
+            {
+                Thread.Sleep(millisecondsTimeout: 500);
+                g = Graphics.FromImage(screenCapture);
+                g.CopyFromScreen(Screen.PrimaryScreen.Bounds.X,
+                                 Screen.PrimaryScreen.Bounds.Y,
+                                 0, 0,
+                                 screenCapture.Size,
+                                 CopyPixelOperation.SourceCopy);
+            }
 
             Tuple<bool, int, int> isInCapture = IsInCapture(myPic, screenCapture);
 
             if (isInCapture.Item1)
             {
+                if (salvarPrint)
+                {
+                    string filename = "print" + DateTime.Now.ToString("_dd-MM_hh-mm");
+                    screenCapture.Save($"prints\\{filename}.png", ImageFormat.Png);
+                }
                 return true;
             }
             else

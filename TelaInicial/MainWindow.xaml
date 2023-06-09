@@ -11,6 +11,8 @@
             <TextBlock Text="Resultado" Name="TextoResultado1" FontSize="30" FontWeight="Bold" Visibility="Collapsed"/>
             <Button x:Name="btnLogar" Content="Logar" Click="btnLogar_Click" Width="100" Height="50"/>
             <Button x:Name="btnJogar" Content="Iniciar" Click="btnJogar_Click" Width="100" Height="50"/>
+            <RadioButton x:Name="btnVender" Content="Vender?"/>
+            <RadioButton x:Name="btnAltTab" Content="Alt+Tab?"/>
         </StackPanel>
     </Grid>
 </Window>

@@ -63,6 +63,46 @@ namespace Desktop.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap btn_inicia_batalha_repeticao_sw {
+            get {
+                object obj = ResourceManager.GetObject("btn_inicia_batalha_repeticao_sw", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap btn_repetir_sw {
+            get {
+                object obj = ResourceManager.GetObject("btn_repetir_sw", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap btn_sim_sw {
+            get {
+                object obj = ResourceManager.GetObject("btn_sim_sw", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap btn_vender_Itens_sw {
+            get {
+                object obj = ResourceManager.GetObject("btn_vender_Itens_sw", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap btn2InteragirEmJogo1280x720 {
             get {
                 object obj = ResourceManager.GetObject("btn2InteragirEmJogo1280x720", resourceCulture);
@@ -186,6 +226,16 @@ namespace Desktop.Properties {
         public static System.Drawing.Bitmap iconJogo {
             get {
                 object obj = ResourceManager.GetObject("iconJogo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap janela_loot_pendente_sw {
+            get {
+                object obj = ResourceManager.GetObject("janela_loot_pendente_sw", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
